@@ -1,0 +1,25 @@
+#
+# Enter compilation options
+#
+
+
+# Pick solver; only one may be on at a time
+
+HLLC_1=1
+
+
+# Mesh settings
+
+PARENT_MESH_LEVEL=7
+AMR=0
+
+# Stability and simulation options
+
+IDEAL_GAS=1
+TRANSMISSIVE=1
+X_MAX=1.0
+Y_MAX=1.0
+Z_MAX=1.0
+CFL=0.8
+GAMMA=1.6
+SIMULATION_TIME=0.5
