@@ -3,6 +3,52 @@
 #include "../include/hllc_defs.h"
 #include <stdio.h>
 
+
+int HLLC1()
+{
+  while (CurrentTime < SIMULATION_TIME)
+    {
+      advanceTimestep_HLLC1();
+      toPrimitive(density, vx,vy,vz, pressure, internal_energy,\
+		  C1, C2, C3, C4, C5);
+      set_HLLC_1_transmissive(density, vx,vy,vz, pressure, internal_energy);
+      toConservative(density, vx,vy,vz, pressure, internal_energy,\
+		     C1, C2, C3, C4, C5);
+
+    }
+  return 0;
+}
+
+int advanceTimestep_HLLC1()
+{
+  compute_X_HLLC_Fluxes(density, vx,vy,vz,pressure,internal_energy,\
+			C1,C2,C3,C4,C5,F_R, F_RSTAR, F_L,F_LSTAR);
+  dx = X_MAX / ((double) PARENT_RESOLUTION);
+  dy = Y_MAX / ((double) PARENT_RESOLUTION);
+  dz = Z_MAX / ((double) PARENT_RESOLUTION);
+
+  dt = CFL * dx / S_max;
+
+  // if dt y < dt x -> dt = dty 
+
+  CurrentTime += dt;
+  printf("\n\nMax Signal Speed: %10.10f\n", S_max);
+  printf("Time: %10.5f \t dt = %5.10f\n", CurrentTime, dt);
+  
+  int i,j,k;
+  //printf("%f\n",F_TOTAL[1][1][1][0]);
+  for (i=ghost_cell_offset; i < PARENT_RESOLUTION + ghost_cell_offset; i++)
+    for (j=ghost_cell_offset; j < PARENT_RESOLUTION + ghost_cell_offset; j++)
+      for (k=ghost_cell_offset; k < PARENT_RESOLUTION + ghost_cell_offset; k++)
+	{
+	  //printf("k = %d < %d\n", k, (int)PARENT_RESOLUTION + ghost_cell_offset);
+	  C1[i][j][k] -= dt/dx * (F_TOTAL[i][j][k][0] - F_TOTAL[i-1][j][k][0]);
+	  
+	}
+
+  return 0;
+}
+
 int read_parent_mesh()
 {
   parent_mesh = fopen("parent_mesh.dat","r");

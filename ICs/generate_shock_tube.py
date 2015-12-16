@@ -28,16 +28,16 @@ for i in range(0, N_CELLS_PER_SIDE):
             if (i > BARRIER):
                 MESH[i][j][k][0] = rho_r
                 MESH[i][j][k][1] = ux_r
-                MESH[i][j][k][1] = uy_r
-                MESH[i][j][k][1] = uz_r
-                MESH[i][j][k][2] = p_r
+                MESH[i][j][k][2] = uy_r
+                MESH[i][j][k][3] = uz_r
+                MESH[i][j][k][4] = p_r
                 #print "RIGHT_SIDE"
             else:
                 #print "LEFT SIDE"
                 MESH[i][j][k][0] = rho_l
                 MESH[i][j][k][1] = ux_l
-                MESH[i][j][k][1] = uy_l
-                MESH[i][j][k][1] = uz_l
-                MESH[i][j][k][2] = p_l
+                MESH[i][j][k][2] = uy_l
+                MESH[i][j][k][3] = uz_l
+                MESH[i][j][k][4] = p_l
 
 MESH.tofile(f)

@@ -27,6 +27,11 @@ double *** C5;
 //double *** C6;
 
 double byte_size;
+double CurrentTime;
+double dt;
+double dx;
+double dy;
+double dz;
 #endif // parent_mesh
 
 #ifdef HLLC_1
@@ -35,25 +40,39 @@ double S_max;
 double S_star;
 double S_L;
 double S_R;
-double * U_STAR;
+double pvrs;
+double a_L;
+double a_R;
+double a_bar;
+double rho_bar;
+double p_bar;
+double p_star;
+double QL;
+double QR;
+double * U_RSTAR;
+double * U_LSTAR;
+double * U_R;
+double * U_L;
 
 // X-dir
-double *** F_R; // right fan flux state
-double *** F_RSTAR; // right star fan flux state
-double *** F_LSTAR; // left star fan flux state
-double *** F_L; // left fan flux state
+double **** F_R; // right fan flux state
+double **** F_RSTAR; // right star fan flux state
+double **** F_LSTAR; // left star fan flux state
+double **** F_L; // left fan flux state
+double **** F_TOTAL;
 
 // Y-dir
-double *** G_R; // right fan flux state                                                                                                                             
-double *** G_RSTAR; // right star fan flux state                                                                                                                    
-double *** G_LSTAR; // left star fan flux state                                                                                                                     
-double *** G_L; // left fan flux state                
-
+double **** G_R; // right fan flux state                                                                                                                            
+double **** G_RSTAR; // right star fan flux state                                                                                                                   
+double **** G_LSTAR; // left star fan flux state                                                                                                                    
+double **** G_L; // left fan flux state                
+double **** G_TOTAL;
 
 // Z-dir
-double *** H_R; // right fan flux state                                                                                                                             
-double *** H_RSTAR; // right star fan flux state                                                                                                                    
-double *** H_LSTAR; // left star fan flux state                                                                                                                     
-double *** H_L; // left fan flux state                
+double **** H_R; // right fan flux state                                                                                                                            
+double **** H_RSTAR; // right star fan flux state                                                                                                                   
+double **** H_LSTAR; // left star fan flux state                                                                                                                    
+double **** H_L; // left fan flux state                
+double **** H_TOTAL;
 #endif // HLLC
 

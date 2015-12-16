@@ -27,3 +27,10 @@ double pressure_covolume_gas(double e, double rho, double b, double gamma)
   double p = e * ((gamma - 1) * rho)/(1 - b*rho);
   return p;
 }
+
+double sound_speed_ideal_gas(double p, double rho, double gamma)
+{
+  //printf("p,rho,gamma = %f,%f,%f\n",p,rho, gamma);
+  double c = sqrt((double)gamma * p / rho);
+  return c;
+}

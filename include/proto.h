@@ -7,6 +7,7 @@
 
 // mesh.c
 int read_parent_mesh();
+int advanceTimestep_HLLC1();
 
 // flux.c
 int initialize_flux_arrays();
@@ -22,6 +23,7 @@ double internal_energy_ideal_gas(double,double,double);
 double internal_energy_covolume_gas(double, double, double, double);
 double pressure_ideal_gas(double,double,double);
 double pressure_covolume_gas(double, double, double, double);
+double sound_speed_ideal_gas(double, double, double);
 
 // bcs.c
 

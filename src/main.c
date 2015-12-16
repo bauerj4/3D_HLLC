@@ -6,6 +6,7 @@
 
 int main()
 {
+
 #ifdef MPICH
 #endif // MPICH
 
@@ -15,6 +16,7 @@ int main()
 #if !defined(OPENCL) && !defined(MPICH)
   // Serial mesh initialization
   byte_size = 0;
+  CurrentTime = 0.;
   printf("HLLC3 is initializing mesh...\n");
   printf("Parent mesh is (%d X %d X %d).\n", (int)PARENT_RESOLUTION, (int)PARENT_RESOLUTION, (int)PARENT_RESOLUTION);
   
@@ -37,7 +39,7 @@ int main()
   printf("Now working in conservative form.\n");
 
 #endif // HLLC_1
-  // 
+  HLLC1();
 #endif //!defined(OPENCL) && !defined(MPICH)
 
   return 0;
