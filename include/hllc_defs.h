@@ -9,4 +9,4 @@
 #define Z_MAX 1.0
 #define CFL 0.8
 #define GAMMA 1.6
-#define SIMULATION_TIME 0.5
+#define SIMULATION_TIME 0.15

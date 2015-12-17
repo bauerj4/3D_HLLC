@@ -19,8 +19,16 @@ int toConservative(double *** density, double *** vx, double *** vy, double *** 
 	  C2[i][j][k] = density[i][j][k] * vx[i][j][k]; 
           C3[i][j][k] = density[i][j][k] * vy[i][j][k];
           C4[i][j][k] = density[i][j][k] * vz[i][j][k];
+	  //printf("vx.vy.vz = %f, %f, %f\n", vx[i][j][k], vy[i][j][k], vz[i][j][k]);
 	  C5[i][j][k] = density[i][j][k] * (0.5 * v_dot_v +\
 					    internal_energy[i][j][k]);
+
+	  //printf("C1, C2, C3, C4, C5 = [%f, %f, %f, %f, %f]\n", C1[i][j][k], \
+	    //	 C2[i][j][k], C3[i][j][k], C4[i][j][k], C5[i][j][k]);
+	  if(C1[0] == 0)
+	    {
+	      printf("Warning: 0 density!\n");
+	    }
 	}
 
   
@@ -39,10 +47,12 @@ int toPrimitive(double *** density, double *** vx, double *** vy, double *** vz,
 	  density[i][j][k] = C1[i][j][k];
 	  vx[i][j][k] = C2[i][j][k] / C1[i][j][k];
           vy[i][j][k] = C3[i][j][k] / C1[i][j][k];
-          vz[i][j][k] =C2[i][j][k] / C1[i][j][k];
+          vz[i][j][k] =C4[i][j][k] / C1[i][j][k];
 	  v_dot_v = vx[i][j][k] * vx[i][j][k] +  vy[i][j][k] * vy[i][j][k] + \
 	    vz[i][j][k] * vz[i][j][k];
 	  internal_energy[i][j][k] = C5[i][j][k] / density[i][j][k] - 0.5 * v_dot_v;
+	  //printf("rho, vx, vy, vz, p, e = [%f, %f, %f, %f, %f, %f]\n", density[i][j][k], \
+	    //      vx[i][j][k], vy[i][j][k], vz[i][j][k], pressure[i][j][k], internal_energy[i][j][k]);
 
 	  // Get pressure from EoS
 #ifdef IDEAL_GAS

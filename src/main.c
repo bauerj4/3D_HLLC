@@ -30,16 +30,20 @@ int main()
 
 #ifdef TRANSMISSIVE
   printf("Transmissive boundaries selected.\n");
-  set_HLLC_1_transmissive(density, vx,vy,vz, pressure,internal_energy);
+  set_HLLC_1_transmissive(density, vx,vy,vz, pressure,internal_energy,C1,C2,C3,C4,C5);
 #endif // TRANSMISSIVE
 
   // Convert to conservative variables for calculation                                                                                                               
   toConservative(density, vx,vy,vz,pressure,internal_energy,
 		 C1, C2, C3, C4, C5);
+
+#ifdef TRANSMISSIVE
+  set_HLLC_1_transmissive(density, vx,vy,vz, pressure,internal_energy,C1,C2,C3,C4,C5);
+#endif // TRANSMISSIVE
   printf("Now working in conservative form.\n");
+  HLLC1();
 
 #endif // HLLC_1
-  HLLC1();
 #endif //!defined(OPENCL) && !defined(MPICH)
 
   return 0;

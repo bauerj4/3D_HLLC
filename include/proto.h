@@ -27,5 +27,6 @@ double sound_speed_ideal_gas(double, double, double);
 
 // bcs.c
 
-int set_HLLC_1_transmissive(double***, double ***, double ***, double ***, double ***, double ***);
+int set_HLLC_1_transmissive(double***, double ***, double ***, double ***, double ***, double ***,\
+			    double ***, double ***, double ***, double***, double ***);
 int set_HLLC_1_periodic(double***, double ***, double ***, double ***, double ***, double ***);

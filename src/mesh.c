@@ -3,19 +3,53 @@
 #include "../include/hllc_defs.h"
 #include <stdio.h>
 
+int write_mesh(char * FILE_NAME)
+{
+  int i,j,k;
+  snapshot = fopen(FILE_NAME, "w");
+  for (i=0; i < PARENT_RESOLUTION + 2*ghost_cell_offset; i++)
+    for (j=0; j < PARENT_RESOLUTION + 2*ghost_cell_offset; j++)
+      for (k=0; k < PARENT_RESOLUTION + 2*ghost_cell_offset; k++)
+	{
+	  /*
+	  fwrite(&density[i][j][k], sizeof(double), 1,  snapshot);
+	  fwrite(&vx[i][j][k], sizeof(double), 1,  snapshot);
+	  fwrite(&vy[i][j][k], sizeof(double), 1,  snapshot);
+	  fwrite(&vz[i][j][k], sizeof(double), 1,  snapshot);
+	  fwrite(&pressure[i][j][k], sizeof(double), 1,  snapshot);
+	  fwrite(&internal_energy[i][j][k], sizeof(double), 1, snapshot);
+	  */
+	  
+          fwrite(&C1[i][j][k], sizeof(double), 1,  snapshot);
+          fwrite(&C2[i][j][k], sizeof(double), 1,  snapshot);
+          fwrite(&C3[i][j][k], sizeof(double), 1,  snapshot);
+          fwrite(&C4[i][j][k], sizeof(double), 1,  snapshot);
+          fwrite(&C5[i][j][k], sizeof(double), 1,  snapshot);
+	  
+          //fwrite(&internal_energy[i][j][k], sizeof(double), 1, snapshot);
+
+	}
+  return 0;
+}
 
 int HLLC1()
 {
+  write_mesh("ics.dat");
   while (CurrentTime < SIMULATION_TIME)
     {
       advanceTimestep_HLLC1();
-      toPrimitive(density, vx,vy,vz, pressure, internal_energy,\
-		  C1, C2, C3, C4, C5);
-      set_HLLC_1_transmissive(density, vx,vy,vz, pressure, internal_energy);
-      toConservative(density, vx,vy,vz, pressure, internal_energy,\
+      toPrimitive(density, vx,vy,vz, pressure, internal_energy,	\
+			  C1, C2, C3, C4, C5);
+      toConservative(density, vx,vy,vz, pressure, internal_energy, \
 		     C1, C2, C3, C4, C5);
 
+      set_HLLC_1_transmissive(density, vx,vy,vz, pressure, internal_energy, C1, C2,C3, C4,C5);
+      //toConservative(density, vx,vy,vz, pressure, internal_energy,	\
+	//	     C1, C2, C3, C4, C5);
+
     }
+  printf("\n\nSimulation time %f reached.  Simulation ends.\n", SIMULATION_TIME);
+  write_mesh("final_snapshot.dat");
   return 0;
 }
 
@@ -42,8 +76,13 @@ int advanceTimestep_HLLC1()
       for (k=ghost_cell_offset; k < PARENT_RESOLUTION + ghost_cell_offset; k++)
 	{
 	  //printf("k = %d < %d\n", k, (int)PARENT_RESOLUTION + ghost_cell_offset);
+	  //printf("[%f, %f, %f, %f, %f]\n", F_TOTAL[i][j][k][0], F_TOTAL[i][j][k][1], \
+	    // F_TOTAL[i][j][k][2],  F_TOTAL[i][j][k][3],  F_TOTAL[i][j][k][4]);
 	  C1[i][j][k] -= dt/dx * (F_TOTAL[i][j][k][0] - F_TOTAL[i-1][j][k][0]);
-	  
+	  C2[i][j][k] -= dt/dx * (F_TOTAL[i][j][k][1] - F_TOTAL[i-1][j][k][1]);
+          C3[i][j][k] -= dt/dx * (F_TOTAL[i][j][k][2] - F_TOTAL[i-1][j][k][2]);
+          C4[i][j][k] -= dt/dx * (F_TOTAL[i][j][k][3] - F_TOTAL[i-1][j][k][3]);
+          C5[i][j][k] -= dt/dx * (F_TOTAL[i][j][k][4] - F_TOTAL[i-1][j][k][4]);	  
 	}
 
   return 0;
@@ -111,6 +150,7 @@ int read_parent_mesh()
     }
   byte_size += PARENT_RESOLUTION*PARENT_RESOLUTION*PARENT_RESOLUTION*sizeof(double) * 12;
   byte_size += ghost_cell_offset * PARENT_RESOLUTION * PARENT_RESOLUTION * (12 * 4);
+  double v_dot_v;
   for (i=ghost_cell_offset; i < PARENT_RESOLUTION + ghost_cell_offset; i++)
     {
       for (j=ghost_cell_offset; j < PARENT_RESOLUTION + ghost_cell_offset; j++)
@@ -126,6 +166,31 @@ int read_parent_mesh()
 	      internal_energy[i][j][k] = internal_energy_ideal_gas(pressure[i][j][k], \
 								  density[i][j][k], GAMMA);
 #endif
+	      C1[i][j][k] = density[i][j][k];
+	      C2[i][j][k] = density[i][j][k] * vx[i][j][k];
+	      C3[i][j][k] = density[i][j][k] * vy[i][j][k];
+	      C4[i][j][k] = density[i][j][k] * vz[i][j][k];
+	      v_dot_v = vx[i][j][k] * vx[i][j][k] + vy[i][j][k] * vy[i][j][k] +\
+		vz[i][j][k] * vz[i][j][k];
+
+	      C5[i][j][k] = density[i][j][k] * (0.5 * v_dot_v + internal_energy[i][j][k]);
+
+	      if (density[i][j][k] == 0)
+		{
+		  printf("WARNING: %f DENSITY\n",density[i][j][k]);
+		}
+
+              if (pressure[i][j][k] == 0)
+                {
+                  printf("WARNING: 0 PRESSURE\n");
+                }
+
+              if (internal_energy[i][j][k] == 0)
+                {
+                  printf("WARNING: 0 ENERGY\n");
+                }
+
+
 	    }
 	}
     }

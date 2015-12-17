@@ -10,6 +10,9 @@
 
 #ifndef parent_mesh
 FILE * parent_mesh;
+FILE * snapshot;
+int snapshot_count;
+
 // Primitive
 double *** pressure;
 double *** density;
@@ -28,6 +31,8 @@ double *** C5;
 
 double byte_size;
 double CurrentTime;
+double rho_L, ux_L, uy_L, uz_L, P_L, E_L;
+double rho_R, ux_R, uy_R, uz_R,P_R, E_R;
 double dt;
 double dx;
 double dy;
