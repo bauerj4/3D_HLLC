@@ -40,8 +40,8 @@ int HLLC1()
       advanceTimestep_HLLC1();
       toPrimitive(density, vx,vy,vz, pressure, internal_energy,	\
 			  C1, C2, C3, C4, C5);
-      toConservative(density, vx,vy,vz, pressure, internal_energy, \
-		     C1, C2, C3, C4, C5);
+      toConservative(density, vx,vy,vz, pressure, internal_energy,	\
+      	     C1, C2, C3, C4, C5);
 
       set_HLLC_1_transmissive(density, vx,vy,vz, pressure, internal_energy, C1, C2,C3, C4,C5);
       //toConservative(density, vx,vy,vz, pressure, internal_energy,	\

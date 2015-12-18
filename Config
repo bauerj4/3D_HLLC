@@ -10,7 +10,7 @@ HLLC_1=1
 
 # Mesh settings
 
-PARENT_MESH_LEVEL=6
+PARENT_MESH_LEVEL=7
 AMR=0
 
 # Stability and simulation options
@@ -22,6 +22,6 @@ WAVESPEED_ENTHALPY=1
 X_MAX=1.0
 Y_MAX=1.0
 Z_MAX=1.0
-CFL=0.8
-GAMMA=1.6
+CFL=0.5
+GAMMA=1.4
 SIMULATION_TIME=0.15

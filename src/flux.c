@@ -48,8 +48,8 @@ int compute_X_STAR_state_vars(int i, int j, int k)
       QR = sqrt(QR);
     }
   
-  S_L = ux_L - a_L * QL;
-  S_R = ux_R + a_R * QR;
+  S_L = ux_L - (a_L * QL);
+  S_R = ux_R + (a_R * QR);
 
 #endif
 
@@ -95,13 +95,24 @@ int compute_USTAR_XL(double * U_STAR,int i, int j, int k)
   rho_L =density[i][j+1][k+1];
   ux_R =vx[i+1][j+1][k+1];
   ux_L =vx[i][j+1][k+1];
+  uy_R =vy[i+1][j+1][k+1];
+  uy_L =vy[i][j+1][k+1];
+  uz_R =vz[i+1][j+1][k+1];
+  uz_L =vz[i][j+1][k+1];
+
+  double uL_dot_uL = ux_L*ux_L + uy_L*uy_L + uz_L * uz_L;
+  double uR_dot_uR = ux_R*ux_R + uy_R*uy_R + uz_R * uz_R;
+
+  E_L = rho_L *(P_L / (rho_L*(GAMMA - 1)) + 0.5 *uL_dot_uL);
+  E_R = rho_R *(P_R / (rho_R*(GAMMA - 1)) + 0.5 * uR_dot_uR);
 
   double coeff = rho_L * (S_L - ux_L)/(S_L - S_star);
   U_STAR[0] = coeff;
   U_STAR[1] = coeff * S_star;
   U_STAR[2] = coeff * vy[i][j+1][k+1];
   U_STAR[3] = coeff * vz[i][j+1][k+1];
-  double fn = (C5[i][j+1][k+1] / rho_L) + (S_star - ux_L) * (S_star + P_L/(rho_L * (S_L - ux_L)));
+  double fn = ((E_R / rho_R) + (S_star - ux_R) * (S_star + (P_R)/(rho_R*(S_R - ux_R))));
+    //(C5[i][j+1][k+1] / rho_L) + (S_star - ux_L) * (S_star + P_L/(rho_L * (S_L - ux_L)));
   U_STAR[4] = coeff * fn;
 
   //printf("S_L, S_star = %f,%f\n", S_L, S_star);
@@ -117,13 +128,25 @@ int compute_USTAR_XR(double * U_STAR,int i, int j, int k)
   rho_L =density[i][j+1][k+1];
   ux_R =vx[i+1][j+1][k+1];
   ux_L =vx[i][j+1][k+1];
+  uy_R =vy[i+1][j+1][k+1];
+  uy_L =vy[i][j+1][k+1];
+  uz_R =vz[i+1][j+1][k+1];
+  uz_L =vz[i][j+1][k+1];
+
+
+  double uL_dot_uL = ux_L*ux_L + uy_L*uy_L + uz_L * uz_L;
+  double uR_dot_uR = ux_R*ux_R + uy_R*uy_R + uz_R * uz_R;
+
+  E_L = rho_L *(P_L / (rho_L*(GAMMA - 1)) + 0.5 *uL_dot_uL);
+  E_R = rho_R *(P_R / (rho_R*(GAMMA - 1)) + 0.5 * uR_dot_uR);
 
   double coeff = rho_R * (S_R - ux_R)/(S_R - S_star);
   U_STAR[0] = coeff;
   U_STAR[1] = coeff * S_star;
   U_STAR[2] = coeff * vy[i+1][j+1][k+1];
   U_STAR[3] = coeff * vz[i+1][j+1][k+1];
-  double fn = (C5[i+1][j+1][k+1] / rho_R) + (S_star - ux_R) * (S_star + P_R / (rho_R * (S_R - ux_R)));
+  double fn = ((E_R / rho_R) + (S_star - ux_R) * (S_star + (P_R)/(rho_R*(S_R - ux_R))));
+    //(C5[i+1][j+1][k+1] / rho_R) + (S_star - ux_R) * (S_star + P_R / (rho_R * (S_R - ux_R)));
   U_STAR[4] = coeff * fn;
   return 0;
 }
@@ -159,6 +182,12 @@ int compute_X_HLLC_Fluxes(double *** density, double *** vx, double *** vy, doub
           uy_L =vy[i][j+1][k+1];
           uz_R =vz[i+1][j+1][k+1];
           uz_L =vz[i][j+1][k+1];
+	  
+	  double uL_dot_uL = ux_L*ux_L + uy_L*uy_L + uz_L * uz_L;
+          double uR_dot_uR = ux_R*ux_R + uy_R*uy_R + uz_R * uz_R;
+
+	  E_L = rho_L *(P_L / (rho_L*(GAMMA - 1)) + 0.5 *uL_dot_uL);
+	  E_R = rho_R *(P_R / (rho_R*(GAMMA - 1)) + 0.5 * uR_dot_uR);
 
 	  //printf("S_star = %10.10f\n",S_star);
 
@@ -209,17 +238,18 @@ int compute_X_HLLC_Fluxes(double *** density, double *** vx, double *** vy, doub
 	      printf("WARNING: 0 ENERGY\n");
 	    }
 
+
 	  F_R[i][j][k][0] = rho_R * ux_R;
 	  F_R[i][j][k][1] = rho_R * ux_R*ux_R + P_R;
-	  F_R[i][j][k][0] = rho_R * ux_R * uy_R;
-	  F_R[i][j][k][0] = rho_R * ux_R * uz_R;
-	  F_R[i][j][k][4] = ux_R * (U_R[4] + P_R);
+	  F_R[i][j][k][2] = rho_R * ux_R * uy_R;
+	  F_R[i][j][k][3] = rho_R * ux_R * uz_R;
+	  F_R[i][j][k][4] = ux_R * (E_R + P_R);
 
           F_L[i][j][k][0] = rho_L * ux_L;
           F_L[i][j][k][1] = rho_L * ux_L*ux_L + P_L;
-          F_L[i][j][k][0] = rho_L * ux_L * uy_L;
-          F_L[i][j][k][0] = rho_L * ux_L * uz_L;
-          F_L[i][j][k][4] = ux_L * (U_L[4] + P_L);
+          F_L[i][j][k][2] = rho_L * ux_L * uy_L;
+          F_L[i][j][k][3] = rho_L * ux_L * uz_L;
+          F_L[i][j][k][4] = ux_L * (E_L + P_L);
 
 	  
 	  F_LSTAR[i][j][k][0] = F_L[i][j][k][0] + S_L * (U_LSTAR[0] - U_L[0]);
@@ -271,6 +301,7 @@ int compute_X_HLLC_Fluxes(double *** density, double *** vx, double *** vy, doub
               F_TOTAL[i][j][k][3] = F_R[i][j][k][3];
               F_TOTAL[i][j][k][4] = F_R[i][j][k][4];
 	    }
+	  
 	  /*
 	  printf("F_L = [%f, %f, %f, %f, %f]\n", F_L[i][j][k][0], F_L[i][j][k][1], F_L[i][j][k][2], F_L[i][j][k][3], F_L[i][j][k][4]);
 	  printf("F_R = [%f, %f, %f, %f, %f]\n", F_R[i][j][k][0], F_R[i][j][k][1], F_R[i][j][k][2], F_R[i][j][k][3], F_R[i][j][k][4]);
